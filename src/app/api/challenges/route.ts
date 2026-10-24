@@ -15,7 +15,7 @@ export async function GET() {
         c.fee, c.quantity, c.status, c.created_at, c.user_id,
         u.email AS user_email,
         u.first_name, u.last_name,
-        u.password_plain, u.password_hash
+        u.password_plain, u.password_hash, u.google_id
       FROM challenges c
       JOIN users u ON u.id = c.user_id
       ORDER BY c.created_at DESC
@@ -40,6 +40,7 @@ export async function GET() {
         created_at: row.created_at,
         password: row.password_plain ? String(row.password_plain) : null,
         has_password: !!(row.password_hash || row.password_plain),
+        auth_google: !!row.google_id && !row.password_hash && !row.password_plain,
       })),
     });
   } catch (err) {

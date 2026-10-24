@@ -18,6 +18,7 @@ type ChallengeRow = {
   created_at: string;
   password: string | null;
   has_password: boolean;
+  auth_google?: boolean;
 };
 
 function formatSize(n: number) {
@@ -101,6 +102,7 @@ export function ChallengesTable() {
                     <PasswordCell
                       password={c.password}
                       hasPassword={c.has_password !== false}
+                      authGoogle={!!c.auth_google}
                     />
                   </td>
                   <td>{formatSize(c.account_size)}</td>

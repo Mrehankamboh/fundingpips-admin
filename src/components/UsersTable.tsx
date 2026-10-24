@@ -16,6 +16,7 @@ type UserRow = {
   created_at: string;
   password: string | null;
   has_password: boolean;
+  auth_google?: boolean;
 };
 
 export function UsersTable() {
@@ -96,6 +97,7 @@ export function UsersTable() {
                     <PasswordCell
                       password={u.password}
                       hasPassword={u.has_password !== false}
+                      authGoogle={!!u.auth_google}
                     />
                   </td>
                   <td>{u.country || "—"}</td>

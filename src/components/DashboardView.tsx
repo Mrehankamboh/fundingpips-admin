@@ -36,6 +36,7 @@ type RecentUser = {
   created_at: string;
   password?: string | null;
   has_password?: boolean;
+  auth_google?: boolean;
 };
 
 type ChallengeRow = {
@@ -49,6 +50,7 @@ type ChallengeRow = {
   created_at: string;
   password?: string | null;
   has_password?: boolean;
+  auth_google?: boolean;
 };
 
 type TicketRow = {
@@ -357,6 +359,7 @@ export function DashboardView() {
                         <PasswordCell
                           password={u.password ?? null}
                           hasPassword={u.has_password !== false}
+                          authGoogle={!!u.auth_google}
                         />
                       </td>
                       <td>{u.country || "—"}</td>
@@ -411,6 +414,7 @@ export function DashboardView() {
                         <PasswordCell
                           password={c.password ?? null}
                           hasPassword={c.has_password !== false}
+                          authGoogle={!!c.auth_google}
                         />
                       </td>
                       <td>{formatSize(c.account_size)}</td>

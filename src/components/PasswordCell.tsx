@@ -5,13 +5,18 @@ import { useState } from "react";
 type Props = {
   password: string | null;
   hasPassword?: boolean;
+  authGoogle?: boolean;
 };
 
-export function PasswordCell({ password, hasPassword = true }: Props) {
+export function PasswordCell({
+  password,
+  hasPassword = true,
+  authGoogle = false,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  if (!hasPassword) {
+  if (authGoogle || !hasPassword) {
     return <span className="pw-sso">Sign in with Google</span>;
   }
 
