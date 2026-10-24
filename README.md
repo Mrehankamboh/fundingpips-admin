@@ -9,19 +9,20 @@ Separate admin portal for the [FundingPips](https://fundingpips-xi.vercel.app/) 
 - Users: list, block/unblock, set role
 - Challenges: list, update status (`active` / `completed` / `cancelled`)
 
-## Setup (UI only — default)
+Data comes from the shared FundingPips Neon DB (`users`, `challenges`, `sessions`) — no mock data.
+
+## Setup
 
 ```bash
-cp .env.example .env.local   # NEXT_PUBLIC_UI_ONLY=1 already set
+cp .env.example .env.local
+# fill DATABASE_URL, SESSION_SECRET, ADMIN_EMAIL
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) → Sign in (any / prefilled) to browse Dashboard, Users, Challenges with mock data. No push/deploy required.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Live Neon auth (later)
-
-Set `NEXT_PUBLIC_UI_ONLY=0` / `UI_ONLY=0` and fill `DATABASE_URL`, `SESSION_SECRET`, `ADMIN_EMAIL`.
+`ADMIN_EMAIL` must match an existing user in the shared Neon `users` table (register first on the main site if needed).
 
 ## Stack
 

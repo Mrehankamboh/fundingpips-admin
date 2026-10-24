@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { MOCK_ME } from "@/lib/mock-data";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Me = {
   email: string;
@@ -11,30 +10,52 @@ type Me = {
   last_name: string;
 };
 
-const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
-
 const NAV = [
   { href: "/", label: "Dashboard" },
   { href: "/users", label: "Users" },
   { href: "/challenges", label: "Challenges" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/tickets", label: "Tickets" },
 ];
 
-export function AdminShell({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
+const META: Record<string, { title: string; subtitle: string }> = {
+  "/": {
+    title: "Dashboard",
+    subtitle: "Users, challenges, and spend at a glance.",
+  },
+  "/users": {
+    title: "Users",
+    subtitle: "Signups, roles, block status, and spend.",
+  },
+  "/challenges": {
+    title: "Challenges",
+    subtitle: "Purchased evaluations and status.",
+  },
+  "/pricing": {
+    title: "Pricing",
+    subtitle: "Edit challenge prices — next purchase uses these values.",
+  },
+  "/tickets": {
+    title: "Tickets",
+    subtitle: "Support chats from traders and visitors.",
+  },
+};
+
+export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [me, setMe] = useState<Me | null>(UI_ONLY ? MOCK_ME : null);
-  const [checking, setChecking] = useState(!UI_ONLY);
+  const [me, setMe] = useState<Me | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  const meta = useMemo(() => {
+    const key =
+      Object.keys(META)
+        .filter((k) => k !== "/")
+        .find((k) => pathname.startsWith(k)) || "/";
+    return META[key] || META["/"];
+  }, [pathname]);
 
   useEffect(() => {
-    if (UI_ONLY) return;
     let cancelled = false;
     (async () => {
       try {
@@ -57,21 +78,22 @@ export function AdminShell({
   }, [router]);
 
   const logout = useCallback(async () => {
-    if (UI_ONLY) {
-      router.replace("/login");
-      return;
-    }
-    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "same-origin",
+    });
     router.replace("/login");
   }, [router]);
 
-  if (checking || !me) {
+  if (checking && !me) {
     return (
       <div className="login-page">
         <p className="status-line">Checking session…</p>
       </div>
     );
   }
+
+  if (!me) return null;
 
   return (
     <div className="shell">
@@ -94,6 +116,7 @@ export function AdminShell({
                 key={item.href}
                 href={item.href}
                 className={`nav-link${active ? " active" : ""}`}
+                prefetch
               >
                 {item.label}
               </Link>
@@ -110,8 +133,8 @@ export function AdminShell({
       <div className="main">
         <header className="topbar">
           <div>
-            <h1>{title}</h1>
-            {subtitle ? <p>{subtitle}</p> : null}
+            <h1>{meta.title}</h1>
+            <p>{meta.subtitle}</p>
           </div>
         </header>
         <div className="content">{children}</div>

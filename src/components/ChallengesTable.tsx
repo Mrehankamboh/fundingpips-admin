@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { MOCK_CHALLENGES } from "@/lib/mock-data";
 
 type ChallengeRow = {
   id: string;
@@ -18,28 +17,17 @@ type ChallengeRow = {
   created_at: string;
 };
 
-const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
-
 function formatSize(n: number) {
   if (n >= 1000) return `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K`;
   return `$${n}`;
 }
 
 export function ChallengesTable() {
-  const [rows, setRows] = useState<ChallengeRow[]>(
-    UI_ONLY ? MOCK_CHALLENGES : []
-  );
-  const [status, setStatus] = useState(
-    UI_ONLY ? `${MOCK_CHALLENGES.length} challenges (UI preview)` : "Loading…"
-  );
+  const [rows, setRows] = useState<ChallengeRow[]>([]);
+  const [status, setStatus] = useState("Loading…");
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
-    if (UI_ONLY) {
-      setRows(MOCK_CHALLENGES);
-      setStatus(`${MOCK_CHALLENGES.length} challenges (UI preview)`);
-      return;
-    }
     setError("");
     try {
       const res = await fetch("/api/challenges", { credentials: "same-origin" });
@@ -59,12 +47,6 @@ export function ChallengesTable() {
 
   async function setChallengeStatus(id: string, next: string) {
     setError("");
-    if (UI_ONLY) {
-      setRows((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, status: next } : c))
-      );
-      return;
-    }
     const res = await fetch(`/api/challenges/${id}`, {
       method: "PATCH",
       credentials: "same-origin",

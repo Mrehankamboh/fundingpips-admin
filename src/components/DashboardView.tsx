@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { MOCK_RECENT_USERS, MOCK_STATS } from "@/lib/mock-data";
 
 type Stats = {
   user_count: number;
@@ -20,17 +19,12 @@ type RecentUser = {
   created_at: string;
 };
 
-const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
-
 export function DashboardView() {
-  const [stats, setStats] = useState<Stats | null>(UI_ONLY ? MOCK_STATS : null);
-  const [recent, setRecent] = useState<RecentUser[]>(
-    UI_ONLY ? MOCK_RECENT_USERS : []
-  );
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [recent, setRecent] = useState<RecentUser[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (UI_ONLY) return;
     (async () => {
       try {
         const res = await fetch("/api/stats", { credentials: "same-origin" });
@@ -66,7 +60,10 @@ export function DashboardView() {
         <div className="stat-card">
           <div className="label">Total spend</div>
           <div className="value">
-            ${stats.total_spend.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            $
+            {stats.total_spend.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}
           </div>
         </div>
       </div>
