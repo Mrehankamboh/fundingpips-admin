@@ -11,7 +11,11 @@ export default function LoginPage() {
           </div>
         </div>
         <h1>Admin sign in</h1>
-        <p className="sub">Use your admin account email and password.</p>
+        <p className="sub">
+          {process.env.NEXT_PUBLIC_UI_ONLY === "1"
+            ? "UI preview mode — click Sign in to open the admin shell."
+            : "Use your admin account email and password."}
+        </p>
         <LoginForm />
       </div>
     </div>

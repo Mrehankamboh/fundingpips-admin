@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
+
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(UI_ONLY ? "admin@fundingpips.local" : "");
+  const [password, setPassword] = useState(UI_ONLY ? "preview" : "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -15,6 +17,10 @@ export function LoginForm() {
     setError("");
     setLoading(true);
     try {
+      if (UI_ONLY) {
+        router.replace("/");
+        return;
+      }
       const res = await fetch("/api/auth/login", {
         method: "POST",
         credentials: "same-origin",

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { MOCK_RECENT_USERS, MOCK_STATS } from "@/lib/mock-data";
 
 type Stats = {
   user_count: number;
@@ -19,12 +20,17 @@ type RecentUser = {
   created_at: string;
 };
 
+const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
+
 export function DashboardView() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [recent, setRecent] = useState<RecentUser[]>([]);
+  const [stats, setStats] = useState<Stats | null>(UI_ONLY ? MOCK_STATS : null);
+  const [recent, setRecent] = useState<RecentUser[]>(
+    UI_ONLY ? MOCK_RECENT_USERS : []
+  );
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (UI_ONLY) return;
     (async () => {
       try {
         const res = await fetch("/api/stats", { credentials: "same-origin" });

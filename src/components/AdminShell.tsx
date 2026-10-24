@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { MOCK_ME } from "@/lib/mock-data";
 
 type Me = {
   email: string;
   first_name: string;
   last_name: string;
 };
+
+const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
 
 const NAV = [
   { href: "/", label: "Dashboard" },
@@ -27,10 +30,11 @@ export function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [me, setMe] = useState<Me | null>(null);
-  const [checking, setChecking] = useState(true);
+  const [me, setMe] = useState<Me | null>(UI_ONLY ? MOCK_ME : null);
+  const [checking, setChecking] = useState(!UI_ONLY);
 
   useEffect(() => {
+    if (UI_ONLY) return;
     let cancelled = false;
     (async () => {
       try {
@@ -53,6 +57,10 @@ export function AdminShell({
   }, [router]);
 
   const logout = useCallback(async () => {
+    if (UI_ONLY) {
+      router.replace("/login");
+      return;
+    }
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     router.replace("/login");
   }, [router]);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { MOCK_USERS } from "@/lib/mock-data";
 
 type UserRow = {
   id: string;
@@ -15,12 +16,21 @@ type UserRow = {
   created_at: string;
 };
 
+const UI_ONLY = process.env.NEXT_PUBLIC_UI_ONLY === "1";
+
 export function UsersTable() {
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [status, setStatus] = useState("Loading…");
+  const [users, setUsers] = useState<UserRow[]>(UI_ONLY ? MOCK_USERS : []);
+  const [status, setStatus] = useState(
+    UI_ONLY ? `${MOCK_USERS.length} users (UI preview)` : "Loading…"
+  );
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
+    if (UI_ONLY) {
+      setUsers(MOCK_USERS);
+      setStatus(`${MOCK_USERS.length} users (UI preview)`);
+      return;
+    }
     setError("");
     try {
       const res = await fetch("/api/users", { credentials: "same-origin" });
@@ -40,6 +50,22 @@ export function UsersTable() {
 
   async function patch(id: string, body: { blocked?: boolean; role?: string }) {
     setError("");
+    if (UI_ONLY) {
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === id
+            ? {
+                ...u,
+                ...(typeof body.blocked === "boolean"
+                  ? { blocked: body.blocked }
+                  : {}),
+                ...(body.role ? { role: body.role } : {}),
+              }
+            : u
+        )
+      );
+      return;
+    }
     const res = await fetch(`/api/users/${id}`, {
       method: "PATCH",
       credentials: "same-origin",
