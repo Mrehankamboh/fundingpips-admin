@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ComponentType } from "react";
+import {
+  IconChallenges,
+  IconDashboard,
+  IconPricing,
+  IconTickets,
+  IconUsers,
+} from "./NavIcons";
 
 type Me = {
   email: string;
@@ -10,12 +17,16 @@ type Me = {
   last_name: string;
 };
 
-const NAV = [
-  { href: "/", label: "Dashboard" },
-  { href: "/users", label: "Users" },
-  { href: "/challenges", label: "Challenges" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/tickets", label: "Tickets" },
+const NAV: {
+  href: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+}[] = [
+  { href: "/", label: "Dashboard", Icon: IconDashboard },
+  { href: "/users", label: "Users", Icon: IconUsers },
+  { href: "/challenges", label: "Challenges", Icon: IconChallenges },
+  { href: "/pricing", label: "Pricing", Icon: IconPricing },
+  { href: "/tickets", label: "Tickets", Icon: IconTickets },
 ];
 
 const META: Record<string, { title: string; subtitle: string }> = {
@@ -99,11 +110,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="mark">FP</div>
-          <div>
-            <strong>FundingPips</strong>
-            <span>Admin</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-logo" src="/logo.svg" alt="FundingPips" />
+          <span className="brand-tag">Admin</span>
         </div>
         <nav>
           {NAV.map((item) => {
@@ -111,6 +120,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               item.href === "/"
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
+            const { Icon } = item;
             return (
               <Link
                 key={item.href}
@@ -118,7 +128,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 className={`nav-link${active ? " active" : ""}`}
                 prefetch
               >
-                {item.label}
+                <Icon className="nav-icon" />
+                <span>{item.label}</span>
               </Link>
             );
           })}

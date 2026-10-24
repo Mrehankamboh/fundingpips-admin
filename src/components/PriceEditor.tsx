@@ -39,6 +39,11 @@ export function PriceEditor() {
   }, [load]);
 
   async function save(id: string) {
+    const nextPrice = Number(values[id]);
+    if (!Number.isFinite(nextPrice)) {
+      setNotes((n) => ({ ...n, [id]: "Enter a valid number" }));
+      return;
+    }
     setBusy(id);
     setNotes((n) => ({ ...n, [id]: "" }));
     try {
@@ -46,22 +51,25 @@ export function PriceEditor() {
         method: "PATCH",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, price: Number(values[id]) }),
+        body: JSON.stringify({ id, price: nextPrice }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        setNotes((n) => ({
+          ...n,
+          [id]: data.error || `Save failed (${res.status})`,
+        }));
+        return;
+      }
+      setRows((list) =>
+        list.map((r) => (r.id === id ? { ...r, price: nextPrice } : r))
+      );
       setNotes((n) => ({
         ...n,
-        [id]: res.ok && data.ok ? "Saved" : data.error || "Could not save",
+        [id]: "Saved — live site updates on refresh",
       }));
-      if (res.ok && data.ok) {
-        setRows((list) =>
-          list.map((r) =>
-            r.id === id ? { ...r, price: Number(values[id]) } : r
-          )
-        );
-      }
     } catch {
-      setNotes((n) => ({ ...n, [id]: "Could not save" }));
+      setNotes((n) => ({ ...n, [id]: "Network error — could not save" }));
     } finally {
       setBusy("");
     }
@@ -75,6 +83,11 @@ export function PriceEditor() {
         <h2>Challenge prices</h2>
         <span className="meta">{error || status}</span>
       </div>
+      <p className="price-help">
+        Edit a value then click <strong>Save</strong> on that row. Homepage
+        pricing reads from the same Neon DB — hard-refresh the landing page
+        after saving.
+      </p>
       {error && !rows.length ? (
         <p className="status-line error">{error}</p>
       ) : !rows.length ? (

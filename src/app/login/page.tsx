@@ -5,10 +5,8 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-brand">
-          <div className="mark">FP</div>
-          <div>
-            <strong>FundingPips</strong>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="login-logo" src="/logo.svg" alt="FundingPips" />
         </div>
         <h1>Admin sign in</h1>
         <p className="sub">Use your FundingPips admin email and password.</p>
