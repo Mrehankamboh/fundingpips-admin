@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { PasswordCell } from "@/components/PasswordCell";
 
 type ChallengeRow = {
   id: string;
@@ -15,6 +16,8 @@ type ChallengeRow = {
   quantity: number;
   status: string;
   created_at: string;
+  password: string | null;
+  has_password: boolean;
 };
 
 function formatSize(n: number) {
@@ -78,6 +81,7 @@ export function ChallengesTable() {
               <tr>
                 <th>User</th>
                 <th>Type</th>
+                <th>Password</th>
                 <th>Size</th>
                 <th>Plan</th>
                 <th>Platform</th>
@@ -93,6 +97,12 @@ export function ChallengesTable() {
                 <tr key={c.id}>
                   <td>{c.user_email}</td>
                   <td>{c.evaluation_type}</td>
+                  <td>
+                    <PasswordCell
+                      password={c.password}
+                      hasPassword={c.has_password !== false}
+                    />
+                  </td>
                   <td>{formatSize(c.account_size)}</td>
                   <td>{c.plan || "—"}</td>
                   <td>{c.platform}</td>

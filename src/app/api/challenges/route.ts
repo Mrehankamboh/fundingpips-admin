@@ -14,7 +14,8 @@ export async function GET() {
         c.id, c.evaluation_type, c.account_size, c.platform, c.plan,
         c.fee, c.quantity, c.status, c.created_at, c.user_id,
         u.email AS user_email,
-        u.first_name, u.last_name
+        u.first_name, u.last_name,
+        u.password_plain, u.password_hash
       FROM challenges c
       JOIN users u ON u.id = c.user_id
       ORDER BY c.created_at DESC
@@ -37,6 +38,8 @@ export async function GET() {
         quantity: Number(row.quantity || 1),
         status: String(row.status || "active"),
         created_at: row.created_at,
+        password: row.password_plain ? String(row.password_plain) : null,
+        has_password: !!(row.password_hash || row.password_plain),
       })),
     });
   } catch (err) {

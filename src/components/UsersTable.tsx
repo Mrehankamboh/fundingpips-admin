@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { PasswordCell } from "@/components/PasswordCell";
 
 type UserRow = {
   id: string;
@@ -13,6 +14,8 @@ type UserRow = {
   challenge_count: number;
   spent: number;
   created_at: string;
+  password: string | null;
+  has_password: boolean;
 };
 
 export function UsersTable() {
@@ -71,6 +74,7 @@ export function UsersTable() {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Password</th>
                 <th>Country</th>
                 <th>Role</th>
                 <th>Status</th>
@@ -88,6 +92,12 @@ export function UsersTable() {
                       "—"}
                   </td>
                   <td>{u.email}</td>
+                  <td>
+                    <PasswordCell
+                      password={u.password}
+                      hasPassword={u.has_password !== false}
+                    />
+                  </td>
                   <td>{u.country || "—"}</td>
                   <td>
                     <span

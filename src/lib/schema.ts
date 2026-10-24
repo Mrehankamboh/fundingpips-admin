@@ -9,6 +9,7 @@ export async function ensureSchema(sql: Sql): Promise<void> {
 
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'user'`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS blocked boolean NOT NULL DEFAULT false`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_plain text`;
   await sql`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`;
 
   await sql`
